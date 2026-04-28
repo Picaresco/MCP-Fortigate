@@ -68,6 +68,154 @@ Edita `fortigate.config.json`:
 - `fortigate_export_readonly_snapshot`
 - `fortigate_run_readonly_command`
 
+## Ejemplos de uso
+
+Los siguientes ejemplos son ficticios y solo muestran el tipo de preguntas que puedes hacer desde un agente compatible con MCP.
+
+### Diagnostico general
+
+**Peticion**
+
+```text
+Hazme un diagnostico basico del Fortigate.
+```
+
+**Respuesta de ejemplo**
+
+```text
+Fortigate FG-80F / FortiOS 7.4.x
+
+Estado general:
+- Uptime: 128 dias
+- CPU: 4%
+- Memoria: 58%
+- Sesiones activas: 8.421
+- Modo: NAT
+
+Observaciones:
+- Rendimiento estable.
+- No se observan interfaces fisicas con errores relevantes.
+- Hay 2 tuneles IPsec caidos que conviene revisar.
+```
+
+### Tuneles IPsec
+
+**Peticion**
+
+```text
+Listame las conexiones IPsec con entidades externas y dime cuales estan caidas.
+```
+
+**Respuesta de ejemplo**
+
+```text
+Tuneles IPsec:
+
+| Nombre              | Peer publico    | Estado | Observacion                  |
+|---------------------|-----------------|--------|------------------------------|
+| vpn-acme-main       | 203.0.113.10    | UP     | Trafico reciente             |
+| vpn-partner-backup  | 198.51.100.25   | DOWN   | Sin fase 2 activa            |
+| vpn-datacenter      | 203.0.113.80    | UP     | Estable                      |
+
+Resumen: 2 tuneles activos, 1 tunel caido.
+```
+
+### Usuarios SSL-VPN
+
+**Peticion**
+
+```text
+Que usuarios estan conectados ahora por VPN y a que equipos internos acceden?
+```
+
+**Respuesta de ejemplo**
+
+```text
+Usuarios SSL-VPN conectados:
+
+| Usuario       | IP VPN        | Origen publico | Destinos LAN observados       |
+|---------------|---------------|----------------|-------------------------------|
+| ana.garcia    | 10.212.10.14  | 198.51.100.44  | 10.10.20.15:3389              |
+| soporte.n1    | 10.212.10.18  | 203.0.113.52   | 10.10.30.20:443, 10.10.30.5:22 |
+
+Nota: la vista se basa en sesiones activas observadas en el Fortigate.
+```
+
+### Exposicion publica
+
+**Peticion**
+
+```text
+Muestrame que servicios internos estan publicados hacia Internet.
+```
+
+**Respuesta de ejemplo**
+
+```text
+Exposicion publica detectada:
+
+| VIP              | IP publica     | Destino interno | Servicio |
+|------------------|----------------|-----------------|----------|
+| vip-portal       | 203.0.113.120  | 10.10.40.10     | HTTPS    |
+| vip-rdp-soporte  | 203.0.113.121  | 10.10.50.25     | RDP      |
+
+Recomendacion:
+- Revisar si RDP debe seguir expuesto publicamente.
+- Aplicar restricciones por origen si el servicio es necesario.
+```
+
+### Ataques de usuario y contrasena
+
+**Peticion**
+
+```text
+Tenemos ataques de usuario y contrasena contra el Fortigate?
+```
+
+**Respuesta de ejemplo**
+
+```text
+Resumen de autenticacion reciente:
+
+- SSL-VPN: 37 fallos de login en la ultima hora.
+- Administracion HTTPS/SSH: sin fallos relevantes.
+- IPs con mas intentos:
+  - 198.51.100.200: 22 intentos
+  - 203.0.113.77: 9 intentos
+
+Posible fuerza bruta contra SSL-VPN.
+```
+
+### Auditoria read-only
+
+**Peticion**
+
+```text
+Haz una auditoria de seguridad del Fortigate y prioriza los hallazgos.
+```
+
+**Respuesta de ejemplo**
+
+```text
+Hallazgos prioritarios:
+
+1. Firmware pendiente de revision
+   - Version observada: FortiOS 7.4.x
+   - Accion: comparar con el ultimo release recomendado por Fortinet.
+
+2. Servicios publicados hacia Internet
+   - Detectados VIPs con HTTPS y RDP.
+   - Accion: validar necesidad, origenes permitidos y logging.
+
+3. Tuneles VPN caidos
+   - 1 tunel IPsec sin fase 2 activa.
+   - Accion: revisar propuestas y conectividad con el peer.
+
+4. SSL-VPN
+   - Usuarios conectados y sesiones LAN activas.
+   - Accion: revisar MFA, grupos permitidos y politicas asociadas.
+```
+
 ## Configuracion para Claude Desktop
 
 Anade este servidor en el JSON de Claude Desktop, ajustando la ruta si cambia:
