@@ -6,6 +6,8 @@ Servidor MCP local para consultar Fortigate por SSH en modo solo lectura.
 
 Pensado para FortiOS 7.4+ y para usarse desde Codex y Claude Desktop mediante transporte `stdio`.
 
+Tambien puede usarse desde cualquier cliente compatible con MCP local por `stdio`, como Cursor, VS Code con GitHub Copilot, Visual Studio con GitHub Copilot Agent Mode, Claude Code y otros clientes MCP.
+
 ## Seguridad
 
 Este MCP no ejecuta comandos libres. Todas las herramientas son read-only y el comando manual `fortigate_run_readonly_command` valida una allowlist estricta.
@@ -262,6 +264,61 @@ args = ['C:\ruta\al\proyecto\server.py']
 
 [mcp_servers.fortigate.env]
 FORTIGATE_MCP_CONFIG = 'C:\ruta\segura\fortigate.config.json'
+```
+
+## Configuracion para Cursor
+
+Cursor puede cargar servidores MCP desde `.cursor/mcp.json` en el proyecto o desde la configuracion global del usuario.
+
+```json
+{
+  "mcpServers": {
+    "fortigate": {
+      "command": "fortigate-mcp",
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
+      }
+    }
+  }
+}
+```
+
+## Configuracion para VS Code
+
+VS Code usa `mcp.json`. Puedes configurarlo a nivel de workspace en `.vscode/mcp.json` o desde la configuracion de usuario.
+
+```json
+{
+  "servers": {
+    "fortigate": {
+      "type": "stdio",
+      "command": "fortigate-mcp",
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
+      }
+    }
+  }
+}
+```
+
+## Configuracion para Visual Studio
+
+Visual Studio 2022 17.14+ y Visual Studio 2026 pueden detectar configuraciones MCP en `%USERPROFILE%\\.mcp.json`, en `<SOLUTIONDIR>\\.mcp.json`, en `.vscode/mcp.json` o en `.cursor/mcp.json`.
+
+Ejemplo de `%USERPROFILE%\\.mcp.json`:
+
+```json
+{
+  "servers": {
+    "fortigate": {
+      "type": "stdio",
+      "command": "fortigate-mcp",
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
+      }
+    }
+  }
+}
 ```
 
 ## Prueba rapida
