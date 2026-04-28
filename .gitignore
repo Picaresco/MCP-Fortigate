@@ -1,0 +1,21 @@
+__pycache__/
+*.py[cod]
+.venv/
+.pkgtest/
+venv/
+.env
+
+# Local Fortigate credentials
+fortigate.config.json
+
+# Local redacted exports still contain topology/policy data
+snapshots/
+
+# Local project/operator notes
+AGENTS.md
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+.pypirc

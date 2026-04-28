@@ -1,0 +1,165 @@
+![Fortigate MCP banner](assets/banner.png)
+
+# Fortigate MCP
+
+Servidor MCP local para consultar Fortigate por SSH en modo solo lectura.
+
+Pensado para FortiOS 7.4+ y para usarse desde Codex y Claude Desktop mediante transporte `stdio`.
+
+## Seguridad
+
+Este MCP no ejecuta comandos libres. Todas las herramientas son read-only y el comando manual `fortigate_run_readonly_command` valida una allowlist estricta.
+
+Bloquea tokens como `config`, `edit`, `set`, `unset`, `delete`, `purge`, `execute`, `reboot`, `shutdown`, `restore`, `factoryreset`, `format` y `debug`.
+
+La seguridad real debe reforzarse tambien en el Fortigate usando un usuario con perfil de solo lectura.
+
+## Instalacion
+
+```powershell
+py -3 -m venv .venv
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+Copy-Item fortigate.config.example.json fortigate.config.json
+```
+
+Tambien se puede instalar como paquete Python desde PyPI:
+
+```powershell
+python -m pip install fortigate-readonly-mcp
+```
+
+Desde TestPyPI:
+
+```powershell
+python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ fortigate-readonly-mcp
+```
+
+Edita `fortigate.config.json`:
+
+```json
+{
+  "fortigate": {
+    "host": "192.168.1.1",
+    "port": 22,
+    "username": "admin",
+    "password": "change-me",
+    "timeout": 15,
+    "banner_timeout": 15,
+    "auth_timeout": 15,
+    "look_for_keys": false,
+    "allow_agent": false,
+    "disabled_algorithms": {}
+  }
+}
+```
+
+`fortigate.config.json` esta ignorado por Git.
+
+## Herramientas MCP
+
+- `fortigate_list_allowed_commands`
+- `fortigate_get_system_status`
+- `fortigate_get_interfaces`
+- `fortigate_get_routes`
+- `fortigate_get_firewall_policies`
+- `fortigate_get_ipsec_vpns`
+- `fortigate_get_ssl_vpn_users`
+- `fortigate_get_ssl_vpn_lan_connections`
+- `fortigate_get_auth_attack_summary`
+- `fortigate_run_audit_readonly`
+- `fortigate_get_public_exposure`
+- `fortigate_find_policy_by_ip`
+- `fortigate_get_interface_health`
+- `fortigate_get_vpn_overview`
+- `fortigate_export_readonly_snapshot`
+- `fortigate_run_readonly_command`
+
+## Configuracion para Claude Desktop
+
+Anade este servidor en el JSON de Claude Desktop, ajustando la ruta si cambia:
+
+```json
+{
+  "mcpServers": {
+    "fortigate": {
+      "command": "C:\\ruta\\al\\proyecto\\.venv\\Scripts\\python.exe",
+      "args": [
+        "C:\\ruta\\al\\proyecto\\server.py"
+      ],
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
+      }
+    }
+  }
+}
+```
+
+Si lo instalas desde PyPI en vez de ejecutar el `server.py` del repo, puedes usar el comando `fortigate-mcp`:
+
+```json
+{
+  "mcpServers": {
+    "fortigate": {
+      "command": "fortigate-mcp",
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
+      }
+    }
+  }
+}
+```
+
+## Configuracion para Codex
+
+Anade este bloque a `%USERPROFILE%\.codex\config.toml`:
+
+```toml
+[mcp_servers.fortigate]
+command = 'C:\ruta\al\proyecto\.venv\Scripts\python.exe'
+args = ['C:\ruta\al\proyecto\server.py']
+
+[mcp_servers.fortigate.env]
+FORTIGATE_MCP_CONFIG = 'C:\ruta\segura\fortigate.config.json'
+```
+
+## Prueba rapida
+
+Validar sintaxis:
+
+```powershell
+.\.venv\Scripts\python.exe -m py_compile server.py
+```
+
+Verificar con MCP Inspector:
+
+```powershell
+npx @modelcontextprotocol/inspector .\.venv\Scripts\python.exe server.py
+```
+
+## Publicacion
+
+No guardar tokens de PyPI/TestPyPI en el repositorio. Usar variables de entorno o `twine` interactivo.
+
+Build local:
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install build twine
+.\.venv\Scripts\python.exe -m build
+.\.venv\Scripts\python.exe -m twine check dist/*
+```
+
+Subida a TestPyPI:
+
+```powershell
+$env:TWINE_USERNAME='__token__'
+$env:TWINE_PASSWORD='<token-testpypi>'
+.\.venv\Scripts\python.exe -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
+```
+
+Subida a PyPI:
+
+```powershell
+$env:TWINE_USERNAME='__token__'
+$env:TWINE_PASSWORD='<token-pypi>'
+.\.venv\Scripts\python.exe -m twine upload dist/*
+```

@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fortigate-readonly-mcp"
+version = "0.1.0"
+description = "Local read-only MCP server for Fortigate administration over SSH"
+readme = "README.md"
+requires-python = ">=3.11"
+license = "MIT"
+authors = [
+  { name = "Alberto Diaz" }
+]
+keywords = ["mcp", "fortigate", "fortinet", "ssh", "readonly", "security"]
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Intended Audience :: System Administrators",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: System :: Networking",
+  "Topic :: System :: Systems Administration",
+]
+dependencies = [
+  "mcp>=1.6.0",
+  "paramiko>=3.4.0",
+  "pydantic>=2.7.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/Picaresco/MCP-Fortigate"
+Issues = "https://github.com/Picaresco/MCP-Fortigate/issues"
+
+[project.scripts]
+fortigate-mcp = "server:main"
+
+[tool.setuptools]
+py-modules = ["server"]
+packages = ["fortigate_mcp"]

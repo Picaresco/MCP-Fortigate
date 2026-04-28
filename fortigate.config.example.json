@@ -1,0 +1,14 @@
+{
+  "fortigate": {
+    "host": "192.168.1.1",
+    "port": 22,
+    "username": "admin",
+    "password": "change-me",
+    "timeout": 15,
+    "banner_timeout": 15,
+    "auth_timeout": 15,
+    "look_for_keys": false,
+    "allow_agent": false,
+    "disabled_algorithms": {}
+  }
+}
