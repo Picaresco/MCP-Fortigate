@@ -28,12 +28,6 @@ Tambien se puede instalar como paquete Python desde PyPI:
 python -m pip install fortigate-readonly-mcp
 ```
 
-Desde TestPyPI:
-
-```powershell
-python -m pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple/ fortigate-readonly-mcp
-```
-
 Edita `fortigate.config.json`:
 
 ```json
@@ -134,32 +128,4 @@ Verificar con MCP Inspector:
 
 ```powershell
 npx @modelcontextprotocol/inspector .\.venv\Scripts\python.exe server.py
-```
-
-## Publicacion
-
-No guardar tokens de PyPI/TestPyPI en el repositorio. Usar variables de entorno o `twine` interactivo.
-
-Build local:
-
-```powershell
-.\.venv\Scripts\python.exe -m pip install build twine
-.\.venv\Scripts\python.exe -m build
-.\.venv\Scripts\python.exe -m twine check dist/*
-```
-
-Subida a TestPyPI:
-
-```powershell
-$env:TWINE_USERNAME='__token__'
-$env:TWINE_PASSWORD='<token-testpypi>'
-.\.venv\Scripts\python.exe -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*
-```
-
-Subida a PyPI:
-
-```powershell
-$env:TWINE_USERNAME='__token__'
-$env:TWINE_PASSWORD='<token-pypi>'
-.\.venv\Scripts\python.exe -m twine upload dist/*
 ```
