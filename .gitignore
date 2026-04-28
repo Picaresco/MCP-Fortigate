@@ -14,6 +14,10 @@ snapshots/
 # Local project/operator notes
 AGENTS.md
 
+# Local publication drafts
+Publicacion_LinkedIn_MCP_Fortigate.docx
+~$*.docx
+
 # Python packaging
 build/
 dist/
