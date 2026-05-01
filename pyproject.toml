@@ -3,8 +3,8 @@ requires = ["setuptools>=69", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "fortigate-readonly-mcp"
-version = "0.2.0"
+name = "fortigate-mcp"
+version = "0.2.1"
 description = "Local read-only MCP server for Fortigate administration over SSH"
 readme = "README.md"
 requires-python = ">=3.11"

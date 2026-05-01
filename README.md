@@ -24,16 +24,32 @@ La seguridad real debe reforzarse tambien en el Fortigate usando un usuario con 
 
 ## Instalacion
 
+Uso recomendado para clientes MCP:
+
+```powershell
+uvx fortigate-mcp@latest
+```
+
+`uvx` ejecuta el servidor en un entorno aislado gestionado por uv y permite usar la ultima version publicada sin crear una venv manual.
+
+Para fijar una version concreta en entornos donde quieras reproducibilidad:
+
+```powershell
+uvx fortigate-mcp@0.2.1
+```
+
+Instalacion local para desarrollo desde el repositorio:
+
 ```powershell
 py -3 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install -r requirements.txt
 Copy-Item fortigate.config.example.json fortigate.config.json
 ```
 
-Tambien se puede instalar como paquete Python desde PyPI:
+Tambien se puede instalar de forma persistente con pip:
 
 ```powershell
-python -m pip install fortigate-readonly-mcp
+python -m pip install --upgrade fortigate-mcp
 ```
 
 Edita `fortigate.config.json`:
@@ -568,7 +584,25 @@ Hallazgos prioritarios:
 
 ## Configuracion para Claude Desktop
 
-Anade este servidor en el JSON de Claude Desktop, ajustando la ruta si cambia:
+Anade este servidor en el JSON de Claude Desktop:
+
+```json
+{
+  "mcpServers": {
+    "fortigate": {
+      "command": "uvx",
+      "args": [
+        "fortigate-mcp@latest"
+      ],
+      "env": {
+        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
+      }
+    }
+  }
+}
+```
+
+Si prefieres ejecutar el `server.py` del repo para desarrollo, usa la venv local:
 
 ```json
 {
@@ -586,29 +620,14 @@ Anade este servidor en el JSON de Claude Desktop, ajustando la ruta si cambia:
 }
 ```
 
-Si lo instalas desde PyPI en vez de ejecutar el `server.py` del repo, puedes usar el comando `fortigate-mcp`:
-
-```json
-{
-  "mcpServers": {
-    "fortigate": {
-      "command": "fortigate-mcp",
-      "env": {
-        "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
-      }
-    }
-  }
-}
-```
-
 ## Configuracion para Codex
 
 Anade este bloque a `%USERPROFILE%\.codex\config.toml`:
 
 ```toml
 [mcp_servers.fortigate]
-command = 'C:\ruta\al\proyecto\.venv\Scripts\python.exe'
-args = ['C:\ruta\al\proyecto\server.py']
+command = 'uvx'
+args = ['fortigate-mcp@latest']
 
 [mcp_servers.fortigate.env]
 FORTIGATE_MCP_CONFIG = 'C:\ruta\segura\fortigate.config.json'
@@ -622,7 +641,10 @@ Cursor puede cargar servidores MCP desde `.cursor/mcp.json` en el proyecto o des
 {
   "mcpServers": {
     "fortigate": {
-      "command": "fortigate-mcp",
+      "command": "uvx",
+      "args": [
+        "fortigate-mcp@latest"
+      ],
       "env": {
         "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
       }
@@ -640,7 +662,10 @@ VS Code usa `mcp.json`. Puedes configurarlo a nivel de workspace en `.vscode/mcp
   "servers": {
     "fortigate": {
       "type": "stdio",
-      "command": "fortigate-mcp",
+      "command": "uvx",
+      "args": [
+        "fortigate-mcp@latest"
+      ],
       "env": {
         "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
       }
@@ -660,7 +685,10 @@ Ejemplo de `%USERPROFILE%\\.mcp.json`:
   "servers": {
     "fortigate": {
       "type": "stdio",
-      "command": "fortigate-mcp",
+      "command": "uvx",
+      "args": [
+        "fortigate-mcp@latest"
+      ],
       "env": {
         "FORTIGATE_MCP_CONFIG": "C:\\ruta\\segura\\fortigate.config.json"
       }
@@ -680,5 +708,5 @@ Validar sintaxis:
 Verificar con MCP Inspector:
 
 ```powershell
-npx @modelcontextprotocol/inspector .\.venv\Scripts\python.exe server.py
+npx @modelcontextprotocol/inspector uvx fortigate-mcp@latest
 ```
